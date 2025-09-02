@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tic Tac Toe</title>
+  <style>
+    body {
+      font-family: "Poppins", sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #667eea, #764ba2);
+    }
+    .game {
+      text-align: center;
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+    h1 {
+      margin-bottom: 20px;
+      color: #333;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(3, 100px);
+      grid-template-rows: repeat(3, 100px);
+      gap: 5px;
+      margin-bottom: 20px;
+    }
+    .cell {
+      background: #f9fafb;
+      border-radius: 10px;
+      font-size: 2.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+    .cell:hover {
+      background: #e5e7eb;
+    }
+    .cell.taken {
+      pointer-events: none;
+    }
+    #status {
+      font-size: 1.2rem;
+      margin-bottom: 15px;
+    }
+    button {
+      background: #2563eb;
+      color: white;
+      padding: 12px 20px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+      transition: 0.3s;
+    }
+    button:hover {
+      background: #1d4ed8;
+    }
+    @media (max-width: 500px) {
+      .board {
+        grid-template-columns: repeat(3, 80px);
+        grid-template-rows: repeat(3, 80px);
+      }
+      .cell {
+        font-size: 2rem;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="game">
+    <h1>Tic Tac Toe</h1>
+    <div id="status">Player X's turn</div>
+    <div class="board" id="board">
+      <div class="cell" data-index="0"></div>
+      <div class="cell" data-index="1"></div>
+      <div class="cell" data-index="2"></div>
+      <div class="cell" data-index="3"></div>
+      <div class="cell" data-index="4"></div>
+      <div class="cell" data-index="5"></div>
+      <div class="cell" data-index="6"></div>
+      <div class="cell" data-index="7"></div>
+      <div class="cell" data-index="8"></div>
+    </div>
+    <button onclick="resetGame()">Restart</button>
+  </div>
+
+  <script>
+    const cells = document.querySelectorAll(".cell");
+    const statusText = document.getElementById("status");
+    let currentPlayer = "X";
+    let gameActive = true;
+    let board = ["", "", "", "", "", "", "", "", ""];
+
+    const winPatterns = [
+      [0, 1, 2],
+      [3, 4, 5],
+      [6, 7, 8],
+      [0, 3, 6],
+      [1, 4, 7],
+      [2, 5, 8],
+      [0, 4, 8],
+      [2, 4, 6]
+    ];
+
+    cells.forEach(cell => {
+      cell.addEventListener("click", handleClick);
+    });
+
+    function handleClick(e) {
+      const index = e.target.dataset.index;
+      if (board[index] !== "" || !gameActive) return;
+
+      board[index] = currentPlayer;
+      e.target.textContent = currentPlayer;
+      e.target.classList.add("taken");
+
+      if (checkWinner()) {
+        statusText.textContent = `🎉 Player ${currentPlayer} Wins!`;
+        gameActive = false;
+      } else if (board.every(cell => cell !== "")) {
+        statusText.textContent = "🤝 It's a Draw!";
+        gameActive = false;
+      } else {
+        currentPlayer = currentPlayer === "X" ? "O" : "X";
+        statusText.textContent = `Player ${currentPlayer}'s turn`;
+      }
+    }
+
+    function checkWinner() {
+      return winPatterns.some(pattern => {
+        return pattern.every(index => board[index] === currentPlayer);
+      });
+    }
+
+    function resetGame() {
+      board = ["", "", "", "", "", "", "", "", ""];
+      gameActive = true;
+      currentPlayer = "X";
+      statusText.textContent = "Player X's turn";
+      cells.forEach(cell => {
+        cell.textContent = "";
+        cell.classList.remove("taken");
+      });
+    }
+  </script>
+</body>
+</html>
